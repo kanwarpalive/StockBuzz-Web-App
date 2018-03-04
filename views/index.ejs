@@ -1,0 +1,160 @@
+
+
+<!DOCTYPE html>
+  <html>
+  <head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	  <link rel='stylesheet' href='/stylesheets/style.css' />
+	  <link rel='stylesheet' href='/stylesheets/nv.d3.css'/>
+      <style>
+        body {
+            background-image: url("http://4.bp.blogspot.com/-l6e_2yG6jwI/UkMHcW3xQII/AAAAAAAAAB8/27rn26ypRAU/s1600/business.jpg");
+           	 }
+		h1 {
+				font-family: serif;
+				font-style: italic;
+				color: #ff6666;
+				text-shadow:bisque;
+				}
+          h2 {
+              font-family: "Times New Roman";
+              font-style: italic;
+              font-size: 80px;
+			  color: darkslategray;
+          	 }
+
+      </style>
+  </head>
+  <body>
+<br>
+<h2> STOCKBUZZ.. </h2>
+<br>
+       <h1><%= jsondata.Name %></h1>
+       	<div class="form-group">
+  			<form action="/" method="get"></form>
+  			<label for="usr">Search Quote</label>
+ 			 <input type="text" class="form-control" id="term" name="usr" >
+			</div>
+			<button type=submit id="search" class="btn btn-white btn-default active" onclick="">
+       		 <i class="fa fa-cog" aria-hidden="true" id="search"></i> ENTER QUOTE
+    		</button>
+
+   <div>
+   <div class="row">
+   <div class="col-md-6">
+	   <h1>COMPANY'S PROFILE:</h1>
+    <table class="table">
+    	<thead>
+      		<tr>
+        		<th style="color: #ff6666"   bgcolor="#7fffd4">ATTRIBUTE</th>
+        		<th style="color: #ff6666"  bgcolor="#7fffd4">VALUE</th>
+       		</tr>
+    	</thead>
+    	<tbody>
+      		<tr>
+	        	<td>Name</td>
+	        	<td><%= jsondata.Name %></td>
+       		</tr>
+      		<tr>
+        		<td>PRICE</td>
+        		<td><%= jsondata.LastTradePriceOnly %></td>
+     		</tr>
+     		<tr>
+        		<td>AverageDailyVolume</td>
+        		<td><%= jsondata.AverageDailyVolume %></td>
+     		</tr>
+     		<tr>
+        		<td>DaysHigh</td>
+        		<td><%= jsondata.DaysHigh %></td>
+     		</tr>
+     		<tr>
+        		<td>YearLow</td>
+        		<td><%=jsondata.YearLow %></td>
+     		</tr>
+     		<tr>
+        		<td>YearHigh</td>
+        		<td><%= jsondata.YearHigh %></td>
+     		</tr>
+     		<tr>
+        		<td>MarketCapitalization</td>
+        		<td><%= jsondata.MarketCapitalization %></td>
+     		</tr>
+     		<tr>
+        		<td>DaysRange</td>
+        		<td><%= jsondata.DaysRange %></td>
+     		</tr>
+     		<tr>
+        		<td>Volume</td>
+        		<td><%= jsondata.Volume %></td>
+     		</tr>
+     		<tr>
+        		<td>StockExchange</td>
+        		<td><%= jsondata.StockExchange %></td>
+     		</tr>
+     		<tr>
+        		<td>Change</td>
+        		<td><%= jsondata.Change %></td>
+     		</tr>
+
+    	</tbody>
+  	</table>
+  	</div>
+  	<div class="col-md-6" style="background-color: cornsilk">
+        <div id="chart" height="500px">
+            <svg></svg>
+        </div>
+
+		<h4>TimeStamp VS LastTradePriceOnly</h4>
+  	</div>
+		<br>
+	   <br>
+	   <h3  >95% Confident to predicts this stock to: <%=trend%></h3>
+
+   </div>
+  </div>
+  </body>
+  <h1 style="display:"><%= %></h1>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+   	 	$('#search').click(function()
+			{
+			location.href="?term="+$("#term").val();
+			});
+	</script>
+<%#
+// nv.d3.js
+// Passing json object
+// Customizable component function d
+%>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="/javascripts/d3.js"></script>
+<script src="/javascripts/nv.d3.js"></script>
+	<script>
+
+      d3.json('/javascripts/data.json', function(data) {
+          nv.addGraph(function() {
+              var chart = nv.models.cumulativeLineChart()
+                  .x(function(d) {return d[0] ;})
+                 .y(function(d) { return d[1] }) //adjusting, 100% is 1.00, not 100 as it is in the data
+                  .color(d3.scale.category10().range())
+                  .useInteractiveGuideline(true);
+              chart.xAxis
+                  .tickFormat(function(d) {
+                      //   var dx = data[0].values[d] && data[0].values[d][0] || 0;
+                      //   return d.time.format('%x')(new Date(dx))
+					  return d;
+                  });
+              chart.yAxis.tickFormat(function(d){
+                  return d3.format(",")(d[1]);
+              });
+              d3.select('#chart svg')
+                  .datum(data)
+                  .call(chart);
+              nv.utils.windowResize(chart.update);
+              return chart;
+          });
+      });
+  </script>
+</html>
+
